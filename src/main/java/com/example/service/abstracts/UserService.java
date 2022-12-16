@@ -10,5 +10,6 @@ public interface UserService {
     UserDto getUser(String email);
     UserDto createUser(UserDto userDto);
     UserDto logInUser(UserDto userDto);
+    UserDto getUserById(Long id);
 
 }
