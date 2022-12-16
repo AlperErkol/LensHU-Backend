@@ -8,4 +8,6 @@ public interface UserService {
     List<User> getAllUsers();
     User getUser(String email);
     User createUser(User user);
+    User logInUser(User user);
+
 }

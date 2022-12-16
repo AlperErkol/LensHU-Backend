@@ -45,4 +45,16 @@ public class UserManager implements UserService {
         return null;
     }
 
+    @Override
+    public User logInUser(User user) {
+        //given info
+        String email = user.getEmail();
+        String password = user.getPassword();
+
+        User searchUser = this.userRepository.findFirstByEmail(email);
+        if (searchUser != null && searchUser.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
 }
