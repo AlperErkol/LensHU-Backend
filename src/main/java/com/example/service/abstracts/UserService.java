@@ -1,13 +1,14 @@
 package com.example.service.abstracts;
 
+import com.example.dto.UserDto;
 import com.example.model.User;
 
 import java.util.List;
 
 public interface UserService {
-    List<User> getAllUsers();
-    User getUser(String email);
-    User createUser(User user);
-    User logInUser(User user);
+    List<UserDto> getAllUsers();
+    UserDto getUser(String email);
+    UserDto createUser(UserDto userDto);
+    UserDto logInUser(UserDto userDto);
 
 }
