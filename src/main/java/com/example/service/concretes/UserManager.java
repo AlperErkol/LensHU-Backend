@@ -100,4 +100,19 @@ public class UserManager implements UserService {
             return null;
         }
     }
+
+    @Override
+    public UserDto getUserById(Long id) {
+        User user = this.userRepository.getUserById(id);
+        if (user != null)
+        {
+            UserDto userDto = this.modelMapper.map(user, UserDto.class);
+            return userDto;
+        }
+        // There is no user with the specified id.
+        else
+        {
+            return null;
+        }
+    }
 }
