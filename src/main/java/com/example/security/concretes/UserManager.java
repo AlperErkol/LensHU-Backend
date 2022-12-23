@@ -1,4 +1,4 @@
-package com.example.service.concretes;
+package com.example.security.concretes;
 import com.example.dto.UserDto;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseModel;
@@ -19,13 +19,15 @@ import java.util.List;
 public class UserManager implements UserService {
 
     private UserRepository userRepository;
+    private VerificationTokenManager verificationTokenManager;
     private ModelMapper modelMapper;
     private PasswordConfig passwordConfig;
 
     @Autowired
-    public UserManager(UserRepository userRepository, ModelMapper modelMapper, PasswordConfig passwordConfig) {
+    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig) {
         super();
         this.userRepository = userRepository;
+        this.verificationTokenManager = verificationTokenManager;
         this.modelMapper = modelMapper;
         this.passwordConfig = passwordConfig;
     }
@@ -61,6 +63,20 @@ public class UserManager implements UserService {
     }
 
     @Override
+    public UserDto getUserByEmail(String email) {
+        User user = this.userRepository.getUserByEmail(email);
+        UserDto userDto = this.modelMapper.map(user, UserDto.class);
+        return userDto;
+    }
+
+    @Override
+    public UserDto findFirstByEmail(String email) {
+        User user = this.userRepository.findFirstByEmail(email);
+        UserDto userDto = this.modelMapper.map(user, UserDto.class);
+        return userDto;
+    }
+
+    @Override
     public ResponseModel<UserDto> createUser(UserDto userDto) {
 
         String email = userDto.getEmail();
@@ -78,8 +94,9 @@ public class UserManager implements UserService {
         user.setPassword(encodedPassword);
         user.setActive(false);
         this.userRepository.save(user);
+        verificationTokenManager.createVerificationTokenByUser(user);
 
-        Payload<UserDto> payload = new Payload<>(userDto, false, "Your account has been successfully created.");
+        Payload<UserDto> payload = new Payload<>(userDto, true, "Your account has been successfully created.");
         return new ResponseModel<>(payload, HttpStatus.CREATED);
 
     }

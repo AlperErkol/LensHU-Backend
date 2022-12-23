@@ -12,5 +12,7 @@ public interface UserService {
     ResponseModel<UserDto> createUser(UserDto userDto);
     ResponseModel<UserDto> logInUser(UserDto userDto);
     UserDto getUserById(Long id);
+    UserDto getUserByEmail(String email);
+    UserDto findFirstByEmail(String email);
 
 }
