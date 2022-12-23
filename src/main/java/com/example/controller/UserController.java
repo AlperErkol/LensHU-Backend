@@ -1,8 +1,10 @@
 package com.example.controller;
 
 import com.example.dto.UserDto;
-import com.example.model.User;
+import com.example.util.response.Payload;
+import com.example.util.response.ResponseModel;
 import com.example.service.abstracts.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,21 +34,21 @@ public class UserController {
     }
 
     @PostMapping("/user")
-    public UserDto createUser(@RequestBody UserDto userDto){
-        UserDto createdUser = this.userService.createUser(userDto);
-        return createdUser;
+    public ResponseEntity<Payload<UserDto>> createUser(@RequestBody UserDto userDto){
+        ResponseModel<UserDto> createdUser = this.userService.createUser(userDto);
+        return new ResponseEntity<>(createdUser.getPayload(), createdUser.getHttpStatus());
     }
 
     @PostMapping("/user/session")
-    public UserDto logInUser(@RequestBody UserDto userDto){
-        UserDto loggedInUser = this.userService.logInUser(userDto);
-        return loggedInUser;
+    public ResponseEntity<Payload<UserDto>> logInUser(@RequestBody UserDto userDto){
+        ResponseModel<UserDto> loggedInUser = this.userService.logInUser(userDto);
+        return new ResponseEntity<>(loggedInUser.getPayload(), loggedInUser.getHttpStatus());
     }
 
     @PutMapping("/user/{id}")
-    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto){
-        UserDto createdUser = this.userService.createUser(userDto);
-        return createdUser;
+    public ResponseEntity<Payload<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto userDto){
+        ResponseModel<UserDto> createdUser = this.userService.createUser(userDto);
+        return new ResponseEntity<>(createdUser.getPayload(), createdUser.getHttpStatus());
     }
 
 }
