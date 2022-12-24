@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.dto.UserDto;
-import com.example.model.VerificationToken;
 import com.example.service.abstracts.VerificationTokenService;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseModel;
@@ -23,7 +22,6 @@ public class UserController {
         this.verificationTokenService = verificationTokenService;
     }
 
-
     @GetMapping("/users")
     public List<UserDto> getAllUsers()
     {
@@ -37,14 +35,11 @@ public class UserController {
         return userDto;
     }
 
-    @GetMapping("/userm/{email}")
-    public UserDto getUserByEmail(@PathVariable String email){
+    @PostMapping("/user/email")
+    public ResponseEntity<Payload<Boolean>> checkIfUserAvailableByEmail(@RequestBody String email){
         System.out.println(email);
-        UserDto userDto = this.userService.getUserByEmail(email);
-        UserDto userDto1 = this.userService.findFirstByEmail(email);
-        System.out.println(userDto1);
-        return userDto;
-
+        ResponseModel<Boolean> responseModel = this.userService.checkIfUserAvailableByEmail(email);
+        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 
     @PostMapping("/user")
@@ -67,7 +62,7 @@ public class UserController {
 
     @PostMapping("/user/verification")
     public ResponseEntity<Payload<String>> createVerificationToken(@RequestBody String email){
-        ResponseModel<String> responseModel = this.verificationTokenService.createVerificationToken(email);
+        ResponseModel<String> responseModel = this.verificationTokenService.createVerificationTokenExplicit(email);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 

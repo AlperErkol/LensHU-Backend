@@ -1,5 +1,7 @@
-package com.example.security.concretes;
+package com.example.service.concretes;
 import com.example.dto.UserDto;
+import com.example.model.PasswordModel;
+import com.example.model.PasswordResetToken;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseModel;
 import com.example.model.User;
@@ -11,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
+
 @Service
 @Component
 public class UserManager implements UserService {
@@ -77,6 +79,61 @@ public class UserManager implements UserService {
     }
 
     @Override
+    public ResponseModel<Boolean> checkIfUserAvailableByEmail(String email) {
+        User isUser = this.userRepository.getUserByEmail(email);
+
+        if(isUser != null)
+        {
+            Payload<Boolean> payload = new Payload<>(null, false, "There is an existing account with the specified email address.");
+            return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
+        }
+
+        Payload<Boolean> payload = new Payload<>(true, true, "OK!");
+        return new ResponseModel<>(payload, HttpStatus.OK);
+
+    }
+
+    @Override
+    public ResponseModel<UserDto> changePassword(String email, PasswordModel passwordModel, String token) {
+        User user = this.userRepository.getUserByEmail(email);
+
+        if(user == null)
+        {
+            Payload<UserDto> payload = new Payload<>(null, false, "User could not find.");
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
+        }
+
+        boolean isPasswordsEqual = passwordModel.checkIfPasswordsMatch();
+
+        if(isPasswordsEqual == false)
+        {
+            Payload<UserDto> payload = new Payload<>(null, false, "Passwords does not match.");
+            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        String oldPassword = user.getPassword();
+        String newPassword = passwordModel.getNewPassword();
+        boolean isEqualOldPassword = this.passwordConfig.passwordEncoder().matches(newPassword, oldPassword);
+
+        if(isEqualOldPassword == true)
+        {
+            Payload<UserDto> payload = new Payload<>(null, false, "Your new password must be different from your old password.");
+            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
+        }
+
+
+        String encodedPassword = this.passwordConfig.passwordEncoder().encode(newPassword);
+        user.setPassword(encodedPassword);
+        this.userRepository.save(user);
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+
+        // Delete Token from DB.
+
+        Payload<UserDto> payload = new Payload<>(userDto, true, "Your password has been successfully changed.");
+        return new ResponseModel<>(payload, HttpStatus.CREATED);
+    }
+
+    @Override
     public ResponseModel<UserDto> createUser(UserDto userDto) {
 
         String email = userDto.getEmail();
@@ -94,7 +151,7 @@ public class UserManager implements UserService {
         user.setPassword(encodedPassword);
         user.setActive(false);
         this.userRepository.save(user);
-        verificationTokenManager.createVerificationTokenByUser(user);
+        verificationTokenManager.createVerificationToken(user);
 
         Payload<UserDto> payload = new Payload<>(userDto, true, "Your account has been successfully created.");
         return new ResponseModel<>(payload, HttpStatus.CREATED);

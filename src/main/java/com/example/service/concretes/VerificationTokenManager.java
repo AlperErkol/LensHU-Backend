@@ -1,4 +1,4 @@
-package com.example.security.concretes;
+package com.example.service.concretes;
 
 import com.example.dto.UserDto;
 import com.example.model.User;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 @Component
@@ -29,7 +27,7 @@ public class VerificationTokenManager implements VerificationTokenService {
     }
 
     @Override
-    public ResponseModel<String> createVerificationToken(String email) {
+    public ResponseModel<String> createVerificationTokenExplicit(String email) {
         User user = this.userRepository.getUserByEmail(email);
         if(user == null)
         {
@@ -38,7 +36,6 @@ public class VerificationTokenManager implements VerificationTokenService {
         }
 
         VerificationToken verificationToken = findVerificationTokenByUser(user);
-
         boolean isValid = verificationToken.isExpirationValid();
 
         if(verificationToken != null && isValid)
@@ -47,14 +44,13 @@ public class VerificationTokenManager implements VerificationTokenService {
             return new ResponseModel<>(payload, HttpStatus.OK);
         }
 
-        VerificationToken tokenModel = new VerificationToken(user);
-        this.verificationTokenRepository.save(tokenModel);
-        Payload<String> payload = new Payload<>(tokenModel.getToken(), true, "Verification token is successfully created and sent your email.");
+        VerificationToken createdVerificationToken = createVerificationToken(user);
+        Payload<String> payload = new Payload<>(createdVerificationToken.getToken(), true, "Verification token is successfully created and sent your email.");
         return new ResponseModel<>(payload, HttpStatus.CREATED);
     }
 
     @Override
-    public VerificationToken createVerificationTokenByUser(User user) {
+    public VerificationToken createVerificationToken(User user) {
         VerificationToken verificationToken = new VerificationToken(user);
         return this.verificationTokenRepository.save(verificationToken);
     }
@@ -79,7 +75,6 @@ public class VerificationTokenManager implements VerificationTokenService {
 
         VerificationToken verificationToken = this.verificationTokenRepository.findVerificationTokenByUser(user);
         String DBToken = verificationToken.getToken();
-        Date expiryDate = verificationToken.getExpiryDate();
 
         if(!token.equals(DBToken))
         {
@@ -97,9 +92,22 @@ public class VerificationTokenManager implements VerificationTokenService {
             return responseModel;
         }
 
+        user.setActive(true);
+        this.userRepository.save(user);
+
+        Long tokenId = verificationToken.getId();
+        deleteVerificationToken(tokenId);
+
         Payload<String> payload = new Payload<>(token, true, "Your account has been verified.");
         ResponseModel<String> responseModel = new ResponseModel<>(payload, HttpStatus.OK);
         return responseModel;
 
+    }
+
+    @Override
+    public Boolean deleteVerificationToken(Long verificationTokenId) {
+        VerificationToken deletedVerificationToken = this.verificationTokenRepository.deleteVerificationTokenById(verificationTokenId);
+        if (deletedVerificationToken != null) return true;
+        return false;
     }
 }
