@@ -13,35 +13,35 @@ import java.util.Random;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@MappedSuperclass
 public class Token {
-    private static final int EXPIRATION = 60 * 24;
+    private final int EXPIRATION = 60 * 24;
 
-    private String token = generateToken();
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String token;
     @OneToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
-
-    private Date expiryDate = calculateExpiryDate(EXPIRATION);
+    private Date expiryDate;
 
     public Token(User user){
         this.user = user;
+        this.token = generateToken();
+        this.expiryDate = calculateExpiryDate(EXPIRATION);
     }
-
-
     public Date calculateExpiryDate(int expiryTimeInMinutes){
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
         cal.add(Calendar.MINUTE, expiryTimeInMinutes);
         return new Date(cal.getTime().getTime());
     }
-
     public String generateToken(){
         Random rnd = new Random();
         int number = rnd.nextInt(100000, 999999);
         return String.format("%06d", number);
     }
-
     public boolean isExpirationValid()
     {
         Calendar cal = Calendar.getInstance();

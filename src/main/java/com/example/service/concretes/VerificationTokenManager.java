@@ -7,6 +7,7 @@ import com.example.repository.UserRepository;
 import com.example.repository.VerificationTokenRepository;
 import com.example.service.abstracts.VerificationTokenService;
 import com.example.util.response.Payload;
+import com.example.util.response.ResponseMessage;
 import com.example.util.response.ResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Service;
 @Component
 public class VerificationTokenManager implements VerificationTokenService {
 
-    private VerificationTokenRepository verificationTokenRepository;
-    private UserRepository userRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public VerificationTokenManager(VerificationTokenRepository verificationTokenRepository, UserRepository userRepository){
@@ -31,7 +32,7 @@ public class VerificationTokenManager implements VerificationTokenService {
         User user = this.userRepository.getUserByEmail(email);
         if(user == null)
         {
-            Payload<String> payload = new Payload<>(null, false, "Could not found the user with the specified email.");
+            Payload<String> payload = new Payload<>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
@@ -40,12 +41,12 @@ public class VerificationTokenManager implements VerificationTokenService {
 
         if(verificationToken != null && isValid)
         {
-            Payload<String> payload = new Payload<>(verificationToken.getToken(), true, "Sent old verification token to your email.");
+            Payload<String> payload = new Payload<>(verificationToken.getToken(), true, ResponseMessage.TOKEN_SENT);
             return new ResponseModel<>(payload, HttpStatus.OK);
         }
 
         VerificationToken createdVerificationToken = createVerificationToken(user);
-        Payload<String> payload = new Payload<>(createdVerificationToken.getToken(), true, "Verification token is successfully created and sent your email.");
+        Payload<String> payload = new Payload<>(createdVerificationToken.getToken(), true, ResponseMessage.TOKEN_SENT);
         return new ResponseModel<>(payload, HttpStatus.CREATED);
     }
 
@@ -57,8 +58,7 @@ public class VerificationTokenManager implements VerificationTokenService {
 
     @Override
     public VerificationToken findVerificationTokenByUser(User user) {
-        VerificationToken verificationToken = this.verificationTokenRepository.findVerificationTokenByUser(user);
-        return verificationToken;
+        return this.verificationTokenRepository.findVerificationTokenByUser(user);
     }
 
     @Override
@@ -68,9 +68,9 @@ public class VerificationTokenManager implements VerificationTokenService {
 
         if(user == null)
         {
-            Payload<String> payload = new Payload<>(null, false, "There is no such a user with the specified email.");
-            ResponseModel<String> responseModel = new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
-            return responseModel;
+            Payload<String> payload = new Payload<>(null, false,
+                    ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
         VerificationToken verificationToken = this.verificationTokenRepository.findVerificationTokenByUser(user);
@@ -78,18 +78,16 @@ public class VerificationTokenManager implements VerificationTokenService {
 
         if(!token.equals(DBToken))
         {
-            Payload<String> payload = new Payload<>(null, false, "You've entered incorrect token.");
-            ResponseModel<String> responseModel = new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
-            return responseModel;
+            Payload<String> payload = new Payload<>(null, false, ResponseMessage.WRONG_TOKEN);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
         boolean isExpiryValid = verificationToken.isExpirationValid();
 
         if(!isExpiryValid)
         {
-            Payload<String> payload = new Payload<>(null, false, "Your verification token is expired. New one sent.");
-            ResponseModel<String> responseModel = new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
-            return responseModel;
+            Payload<String> payload = new Payload<>(null, false, ResponseMessage.TOKEN_EXPIRED);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
         user.setActive(true);
@@ -98,16 +96,15 @@ public class VerificationTokenManager implements VerificationTokenService {
         Long tokenId = verificationToken.getId();
         deleteVerificationToken(tokenId);
 
-        Payload<String> payload = new Payload<>(token, true, "Your account has been verified.");
-        ResponseModel<String> responseModel = new ResponseModel<>(payload, HttpStatus.OK);
-        return responseModel;
+        Payload<String> payload = new Payload<>(token, true, ResponseMessage.USER_ACTIVATED);
+        return new ResponseModel<>(payload, HttpStatus.OK);
 
     }
 
     @Override
     public Boolean deleteVerificationToken(Long verificationTokenId) {
-        VerificationToken deletedVerificationToken = this.verificationTokenRepository.deleteVerificationTokenById(verificationTokenId);
-        if (deletedVerificationToken != null) return true;
-        return false;
+        VerificationToken deletedVerificationToken = this.verificationTokenRepository
+                                                                    .deleteVerificationTokenById(verificationTokenId);
+        return deletedVerificationToken != null;
     }
 }

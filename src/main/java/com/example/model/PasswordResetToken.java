@@ -8,12 +8,9 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "PassowordResetTokens")
+@Table(name = "password_reset_tokens")
 public class PasswordResetToken extends Token {
-    private static final int PASSWORD_RESET_EXPIRATION = 60;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private final int EXPIRATION = 60;
 
     public PasswordResetToken(){}
 
@@ -28,6 +25,6 @@ public class PasswordResetToken extends Token {
 
     @Override
     public Date calculateExpiryDate(int expiryTimeInMinutes) {
-        return super.calculateExpiryDate(PASSWORD_RESET_EXPIRATION);
+        return super.calculateExpiryDate(EXPIRATION);
     }
 }

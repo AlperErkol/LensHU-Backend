@@ -5,11 +5,9 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "VerificationTokens")
+@Table(name = "verification_tokens")
 public class VerificationToken extends Token {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private final int EXPIRATION = 60 * 24;
 
     public VerificationToken(){}
     public VerificationToken(User user) {

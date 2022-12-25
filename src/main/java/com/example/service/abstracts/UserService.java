@@ -1,10 +1,8 @@
 package com.example.service.abstracts;
 
 import com.example.dto.UserDto;
-import com.example.model.PasswordModel;
-import com.example.model.PasswordResetToken;
+import com.example.dto.ChangePasswordDto;
 import com.example.util.response.ResponseModel;
-import com.example.model.User;
 
 import java.util.List;
 
@@ -17,6 +15,6 @@ public interface UserService {
     UserDto getUserByEmail(String email);
     UserDto findFirstByEmail(String email);
     ResponseModel<Boolean> checkIfUserAvailableByEmail(String email);
-    ResponseModel<UserDto> changePassword(String Email, PasswordModel passwordModel, String token);
+    ResponseModel<UserDto> changePassword(ChangePasswordDto changePasswordDto, String token);
 
 }
