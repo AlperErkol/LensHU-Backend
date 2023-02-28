@@ -12,4 +12,8 @@ public class UserDto {
     private String surname;
     private String email;
     private String password;
+
+    public UserDto (String email) {
+        this.email = email;
+    }
 }

@@ -10,7 +10,7 @@ public interface VerificationTokenService {
     ResponseModel<String> createVerificationTokenExplicit(String email);
     VerificationToken createVerificationToken(User user);
     VerificationToken findVerificationTokenByUser(User user);
-    ResponseModel<String> verifyToken(UserDto userDto, String token);
+    ResponseModel<String> verifyToken(UserDto userDto, String token, String type);
     Boolean deleteVerificationToken(Long tokenId);
 
 

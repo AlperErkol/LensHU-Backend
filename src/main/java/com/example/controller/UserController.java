@@ -59,17 +59,4 @@ public class UserController {
         ResponseModel<UserDto> responseModel = this.userService.createUser(userDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
-
-    @PostMapping("/user/verification")
-    public ResponseEntity<Payload<String>> createVerificationToken(@RequestBody String email){
-        ResponseModel<String> responseModel = this.verificationTokenService.createVerificationTokenExplicit(email);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
-    @PostMapping("/user/verification/{token}")
-    public ResponseEntity<Payload<String>> verifyToken(@RequestBody UserDto userDto, @PathVariable String token){
-        ResponseModel<String> responseModel = this.verificationTokenService.verifyToken(userDto, token);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
 }
