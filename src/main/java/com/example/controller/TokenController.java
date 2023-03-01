@@ -40,7 +40,7 @@ public class TokenController {
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 
-    @PostMapping("/reset/passwords")
+        @PostMapping("/reset/passwords")
     public ResponseEntity<Payload<UserDto>> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         ResponseModel<UserDto> responseModel = this.userService.changePassword(changePasswordDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
