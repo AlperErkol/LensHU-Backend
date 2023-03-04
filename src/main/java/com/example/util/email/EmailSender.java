@@ -25,9 +25,9 @@ public class EmailSender implements EmailService {
             helper.setText(content, true);
             helper.setTo(to);
             helper.setSubject(subject);
-            helper.setFrom("Hacettepe Üniversitesi Öğrenci İşleri Daire Başkanlığı");
+            helper.setFrom("bilsis.hacettepe.info@gmail.com");
             mailSender.send(mimeMessage);
-            System.out.println("Yollandı...");
+            System.out.println("Email sent successfully.");
         } catch (MessagingException e ){
             System.out.println(e.getMessage());
             throw new IllegalStateException("Failed to send email.");
