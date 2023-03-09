@@ -90,7 +90,6 @@ public class VerificationTokenManager implements VerificationTokenService {
 
         if(type.equals("verify-account"))
         {
-            System.out.println("şimdi yapayanlızım i wanna text you..");
             tokenModel = this.verificationTokenRepository.findVerificationTokenByUser(user);
             System.out.println(tokenModel);
         }
