@@ -13,10 +13,7 @@ public class ResponseMessage {
     public static final String PASSWORD_SAME_OLD = "Your new password must be different from your old password.";
     public static final String PASSWORD_CHANGED = "Your password has been changed.";
     public static final String EXISTING_USER_BY_EMAIL = "There is an existing account with the specified email address.";
-
-
-
-
-
+    public static final String TOKEN_NOT_VERIFIED = "First, you need to verify the token.";
+    public static final String TOKEN_NOT_FOUND = "Token you've been entered could not be found.";
 
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -16,7 +17,6 @@ import java.util.Random;
 @MappedSuperclass
 public class Token {
     private final int EXPIRATION = 60 * 24;
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -25,11 +25,14 @@ public class Token {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
     private Date expiryDate;
-
+    @NonNull
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean verified;
     public Token(User user){
         this.user = user;
         this.token = generateToken();
         this.expiryDate = calculateExpiryDate(EXPIRATION);
+        this.verified = false;
     }
     public Date calculateExpiryDate(int expiryTimeInMinutes){
         Calendar cal = Calendar.getInstance();
@@ -42,13 +45,17 @@ public class Token {
         int number = rnd.nextInt(100000, 999999);
         return String.format("%06d", number);
     }
-    public boolean isExpirationValid()
-    {
+    public boolean isExpirationValid() {
+        /*
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Timestamp(cal.getTime().getTime()));
         Date currentDate = new Date(cal.getTime().getTime());
 
-        return currentDate.compareTo(expiryDate) < 0;
+        return currentDate.compareTo(expiryDate) < 0;*/
+        return true;
     }
 
+    public boolean isVerified(){
+        return this.verified;
+    }
 }

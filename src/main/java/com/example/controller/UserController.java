@@ -1,5 +1,7 @@
 package com.example.controller;
 
+import com.example.dto.EmailDto;
+import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.service.abstracts.VerificationTokenService;
 import com.example.util.response.Payload;
@@ -36,15 +38,15 @@ public class UserController {
     }
 
     @PostMapping("/user/email")
-    public ResponseEntity<Payload<Boolean>> checkIfUserAvailableByEmail(@RequestBody String email){
-        System.out.println(email);
-        ResponseModel<Boolean> responseModel = this.userService.checkIfUserAvailableByEmail(email);
+    public ResponseEntity<Payload<Boolean>> checkIfUserAvailableByEmail(@RequestBody EmailDto emailDto){
+        System.out.println(emailDto.getEmail());
+        ResponseModel<Boolean> responseModel = this.userService.checkIfUserAvailableByEmail(emailDto.getEmail());
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 
     @PostMapping("/user")
-    public ResponseEntity<Payload<UserDto>> createUser(@RequestBody UserDto userDto){
-        ResponseModel<UserDto> responseModel = this.userService.createUser(userDto);
+    public ResponseEntity<Payload<UserDto>> createUser(@RequestBody RegisterUserDto registerUserDto){
+        ResponseModel<UserDto> responseModel = this.userService.createUser(registerUserDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 
@@ -56,20 +58,7 @@ public class UserController {
 
     @PutMapping("/user/{id}")
     public ResponseEntity<Payload<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto userDto){
-        ResponseModel<UserDto> responseModel = this.userService.createUser(userDto);
+        ResponseModel<UserDto> responseModel = this.userService.updateUser(userDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
-
-    @PostMapping("/user/verification")
-    public ResponseEntity<Payload<String>> createVerificationToken(@RequestBody String email){
-        ResponseModel<String> responseModel = this.verificationTokenService.createVerificationTokenExplicit(email);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
-    @PostMapping("/user/verification/{token}")
-    public ResponseEntity<Payload<String>> verifyToken(@RequestBody UserDto userDto, @PathVariable String token){
-        ResponseModel<String> responseModel = this.verificationTokenService.verifyToken(userDto, token);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
 }

@@ -1,6 +1,9 @@
 package com.example.service.concretes;
+import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
-import com.example.dto.ChangePasswordDto;
+import com.example.dto.ResetPasswordDto;
+import com.example.model.PasswordResetToken;
+import com.example.repository.PasswordResetRepository;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseMessage;
 import com.example.util.response.ResponseModel;
@@ -21,17 +24,19 @@ import java.util.List;
 public class UserManager implements UserService {
 
     private final UserRepository userRepository;
+    private final PasswordResetRepository passwordResetRepository;
     private final VerificationTokenManager verificationTokenManager;
     private final ModelMapper modelMapper;
     private final PasswordConfig passwordConfig;
 
     @Autowired
-    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig) {
+    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig, PasswordResetRepository passwordResetRepository) {
         super();
         this.userRepository = userRepository;
         this.verificationTokenManager = verificationTokenManager;
         this.modelMapper = modelMapper;
         this.passwordConfig = passwordConfig;
+        this.passwordResetRepository = passwordResetRepository;
     }
 
     @Override
@@ -88,9 +93,16 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public ResponseModel<UserDto> changePassword(ChangePasswordDto changePasswordDto, String token) {
-        String email = changePasswordDto.getEmail();
-        User user = this.userRepository.getUserByEmail(email);
+    public ResponseModel<UserDto> resetPassword(ResetPasswordDto resetPasswordDto) {
+        String token = resetPasswordDto.getToken();
+        PasswordResetToken passwordResetToken = this.passwordResetRepository.findByToken(token);
+        User user = passwordResetToken.getUser();
+
+        if(!passwordResetToken.isVerified())
+        {
+            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.TOKEN_NOT_VERIFIED);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
+        }
 
         if(user == null)
         {
@@ -98,16 +110,8 @@ public class UserManager implements UserService {
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
-        boolean isPasswordsEqual = changePasswordDto.checkIfPasswordsMatch();
-
-        if(!isPasswordsEqual)
-        {
-            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.PASSWORDS_DO_NOT_MATCH);
-            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
-        }
-
         String oldPassword = user.getPassword();
-        String newPassword = changePasswordDto.getNewPassword();
+        String newPassword = resetPasswordDto.getPassword();
         boolean isEqualOldPassword = this.passwordConfig.passwordEncoder().matches(newPassword, oldPassword);
 
         if(isEqualOldPassword)
@@ -116,6 +120,13 @@ public class UserManager implements UserService {
             return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
         }
 
+        boolean isPasswordsEqual = resetPasswordDto.checkIfPasswordsMatch();
+
+        if(!isPasswordsEqual)
+        {
+            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.PASSWORDS_DO_NOT_MATCH);
+            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
+        }
 
         String encodedPassword = this.passwordConfig.passwordEncoder().encode(newPassword);
         user.setPassword(encodedPassword);
@@ -129,18 +140,38 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public ResponseModel<UserDto> createUser(UserDto userDto) {
+    public ResponseModel<UserDto> createPasswordResetToken(String email) {
+        User user = this.userRepository.findFirstByEmail(email);
+        UserDto userDto = new UserDto(email);
 
-        String email = userDto.getEmail();
+        if(user == null)
+        {
+
+            Payload<UserDto> payload = new Payload<>(userDto, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
+            return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
+        }
+
+        PasswordResetToken passwordResetToken = new PasswordResetToken(user);
+        this.passwordResetRepository.save(passwordResetToken);
+
+        Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.TOKEN_SENT);
+        return new ResponseModel<>(payload, HttpStatus.CREATED);
+    }
+
+    @Override
+    public ResponseModel<UserDto> createUser(RegisterUserDto registerUserDto) {
+
+        String email = registerUserDto.getEmail();
         User hasUser = this.userRepository.findFirstByEmail(email);
-
         if(hasUser != null)
         {
+            UserDto userDto = this.modelMapper.map(hasUser, UserDto.class);
             Payload<UserDto> payload = new Payload<>(userDto, false, ResponseMessage.EXISTING_USER_BY_EMAIL);
             return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
         }
 
-        String password = userDto.getPassword();
+        UserDto userDto = this.modelMapper.map(registerUserDto, UserDto.class);
+        String password = registerUserDto.getPassword();
         String encodedPassword = this.passwordConfig.passwordEncoder().encode(password);
         User user = modelMapper.map(userDto, User.class);
         user.setPassword(encodedPassword);
@@ -151,6 +182,11 @@ public class UserManager implements UserService {
         Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.USER_CREATED);
         return new ResponseModel<>(payload, HttpStatus.CREATED);
 
+    }
+
+    @Override
+    public ResponseModel<UserDto> updateUser(UserDto userDto) {
+        return null;
     }
 
     @Override
