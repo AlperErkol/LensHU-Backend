@@ -44,6 +44,12 @@ public class UserController {
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 
+    @PutMapping("/user")
+    public ResponseEntity<Payload<UserDto>> updateUser(@RequestBody UserDto userDto){
+        ResponseModel<UserDto> responseModel = this.userService.updateUser(userDto);
+        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
+    }
+
     @PostMapping("/user")
     public ResponseEntity<Payload<UserDto>> createUser(@RequestBody RegisterUserDto registerUserDto){
         ResponseModel<UserDto> responseModel = this.userService.createUser(registerUserDto);
@@ -53,12 +59,6 @@ public class UserController {
     @PostMapping("/user/session")
     public ResponseEntity<Payload<UserDto>> logInUser(@RequestBody UserDto userDto){
         ResponseModel<UserDto> responseModel = this.userService.logInUser(userDto);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
-    @PutMapping("/user/{id}")
-    public ResponseEntity<Payload<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto userDto){
-        ResponseModel<UserDto> responseModel = this.userService.updateUser(userDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 }

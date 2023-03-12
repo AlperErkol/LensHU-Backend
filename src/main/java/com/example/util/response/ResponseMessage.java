@@ -15,5 +15,8 @@ public class ResponseMessage {
     public static final String EXISTING_USER_BY_EMAIL = "There is an existing account with the specified email address.";
     public static final String TOKEN_NOT_VERIFIED = "First, you need to verify the token.";
     public static final String TOKEN_NOT_FOUND = "Token you've been entered could not be found.";
+    public static final String USER_UPDATED = "Updated successfully.";
+
+
 
 }

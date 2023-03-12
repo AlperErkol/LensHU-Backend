@@ -184,9 +184,23 @@ public class UserManager implements UserService {
 
     }
 
+    // Update just name and surname
     @Override
     public ResponseModel<UserDto> updateUser(UserDto userDto) {
-        return null;
+        String email = userDto.getEmail();
+        User user = this.userRepository.getUserByEmail(email);
+        if(user == null)
+        {
+            Payload<UserDto> payload = new Payload<UserDto>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
+        }
+        String updateName = userDto.getName();
+        String updateSurname = userDto.getSurname();
+        user.setName(updateName);
+        user.setSurname(updateSurname);
+        this.userRepository.save(user);
+        Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.USER_UPDATED);
+        return new ResponseModel<>(payload, HttpStatus.CREATED);
     }
 
     @Override
