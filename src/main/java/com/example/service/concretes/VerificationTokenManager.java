@@ -149,71 +149,463 @@ public class VerificationTokenManager implements VerificationTokenService {
     }
 
     private String buildEmail(String name, String token) {
-        return "<div style=\"font-family:Helvetica,Arial,sans-serif;font-size:16px;margin:0;color:#0b0c0c\">\n" +
+        return "     <div>\n" +
+                "      <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n" +
+                "        <tbody>\n" +
+                "          <tr>\n" +
+                "            <td valign=\"top\" width=\"100%\">\n" +
+                "              <table\n" +
+                "                width=\"100%\"\n" +
+                "                role=\"content-container\"\n" +
+                "                cellpadding=\"0\"\n" +
+                "                cellspacing=\"0\"\n" +
+                "              >\n" +
+                "                <tbody>\n" +
+                "                  <tr>\n" +
+                "                    <td width=\"100%\">\n" +
+                "                      <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">\n" +
+                "                        <tbody>\n" +
+                "                          <tr>\n" +
+                "                            <td>\n" +
+                "                              <table\n" +
+                "                                width=\"100%\"\n" +
+                "                                cellpadding=\"0\"\n" +
+                "                                cellspacing=\"0\"\n" +
+                "                                style=\"width: 100%; max-width: 600px\"\n" +
+                "                                align=\"center\"\n" +
+                "                              >\n" +
+                "                                <tbody>\n" +
+                "                                  <tr>\n" +
+                "                                    <td\n" +
+                "                                      role=\"modules-container\"\n" +
+                "                                      style=\"\n" +
+                "                                        padding: 0px 0px 0px 0px;\n" +
+                "                                        color: #000000;\n" +
+                "                                        text-align: left;\n" +
+                "                                      \"\n" +
+                "                                      width=\"100%\"\n" +
+                "                                    >\n" +
+                "                                      <table\n" +
+                "                                        cellpadding=\"0\"\n" +
+                "                                        cellspacing=\"0\"\n" +
+                "                                        width=\"100%\"\n" +
+                "                                        role=\"module\"\n" +
+                "                                        data-type=\"columns\"\n" +
+                "                                        style=\"padding: 30px 20px\"\n" +
+                "                                        bgcolor=\"#424549\"\n" +
+                "                                      >\n" +
+                "                                        <tbody>\n" +
+                "                                          <tr role=\"module-content\">\n" +
+                "                                            <td height=\"100%\" valign=\"top\">\n" +
+                "                                              <table\n" +
+                "                                                class=\"column\"\n" +
+                "                                                width=\"540\"\n" +
+                "                                                style=\"\n" +
+                "                                                  width: 540px;\n" +
+                "                                                  border-spacing: 0;\n" +
+                "                                                  border-collapse: collapse;\n" +
+                "                                                  margin: 0px 10px 0px 10px;\n" +
+                "                                                \"\n" +
+                "                                                cellpadding=\"0\"\n" +
+                "                                                cellspacing=\"0\"\n" +
+                "                                              >\n" +
+                "                                                <tbody>\n" +
+                "                                                  <tr>\n" +
+                "                                                    <td\n" +
+                "                                                      style=\"\n" +
+                "                                                        padding: 0px;\n" +
+                "                                                        margin: 0px;\n" +
+                "                                                        border-spacing: 0;\n" +
+                "                                                      \"\n" +
+                "                                                    >\n" +
+                "                                                      <table\n" +
+                "                                                        class=\"wrapper\"\n" +
+                "                                                        role=\"module\"\n" +
+                "                                                        data-type=\"image\"\n" +
+                "                                                        cellpadding=\"0\"\n" +
+                "                                                        cellspacing=\"0\"\n" +
+                "                                                        width=\"100%\"\n" +
+                "                                                        style=\"\n" +
+                "                                                          table-layout: fixed;\n" +
+                "                                                        \"\n" +
+                "                                                      >\n" +
+                "                                                        <tbody>\n" +
+                "                                                          <tr>\n" +
+                "                                                            <td\n" +
+                "                                                              style=\"\n" +
+                "                                                                font-size: 6px;\n" +
+                "                                                                line-height: 10px;\n" +
+                "                                                              \"\n" +
+                "                                                              valign=\"top\"\n" +
+                "                                                              align=\"center\"\n" +
+                "                                                            >\n" +
+                "                                                              <a\n" +
+                "                                                                href=\"https://lensly.io/\"\n" +
+                "                                                                target=\"_blank\"\n" +
+                "                                                                rel=\"noreferrer\"\n" +
+                "                                                              >\n" +
+                "                                                                <img\n" +
+                "                                                                  class=\"max-width\"\n" +
+                "                                                                  border=\"0\"\n" +
+                "                                                                  style=\"\n" +
+                "                                                                    display: block;\n" +
+                "                                                                    color: #000000;\n" +
+                "                                                                    text-decoration: none;\n" +
+                "                                                                    font-size: 16px;\n" +
+                "                                                                    padding-bottom: 30px;\n" +
+                "                                                                  \"\n" +
+                "                                                                  width=\"80\"\n" +
+                "                                                                  alt=\"Lensly-logo\"\n" +
+                "                                                                  data-proportionally-constrained=\"true\"\n" +
+                "                                                                  data-responsive=\"false\"\n" +
+                "                                                                  src=\"Asset8.png\"\n" +
+                "                                                                  height=\"80\"\n" +
+                "                                                              /></a>\n" +
+                "                                                            </td>\n" +
+                "                                                          </tr>\n" +
+                "                                                        </tbody>\n" +
+                "                                                      </table>\n" +
+                "                                                      <table\n" +
+                "                                                        class=\"module\"\n" +
+                "                                                        role=\"module\"\n" +
+                "                                                        data-type=\"text\"\n" +
+                "                                                        cellpadding=\"0\"\n" +
+                "                                                        cellspacing=\"0\"\n" +
+                "                                                        width=\"100%\"\n" +
+                "                                                        style=\"\n" +
+                "                                                          table-layout: fixed;\n" +
+                "                                                        \"\n" +
+                "                                                      >\n" +
+                "                                                        <tbody>\n" +
+                "                                                          <tr>\n" +
+                "                                                            <td\n" +
+                "                                                              style=\"\n" +
+                "                                                                padding: 50px\n" +
+                "                                                                  30px 18px 30px;\n" +
+                "                                                                line-height: 36px;\n" +
+                "                                                                text-align: inherit;\n" +
+                "                                                                background-color: #ffffff;\n" +
+                "                                                              \"\n" +
+                "                                                              height=\"100%\"\n" +
+                "                                                              valign=\"top\"\n" +
+                "                                                              role=\"module-content\"\n" +
+                "                                                            >\n" +
+                "                                                              <div>\n" +
+                "                                                                <div\n" +
+                "                                                                  style=\"\n" +
+                "                                                                    font-family: inherit;\n" +
+                "                                                                    text-align: center;\n" +
+                "                                                                  \"\n" +
+                "                                                                >\n" +
+                "                                                                  <span\n" +
+                "                                                                    style=\"\n" +
+                "                                                                      font-size: 43px;\n" +
+                "                                                                    \"\n" +
+                "                                                                    >Thanks for\n" +
+                "                                                                    signing up,\n" + name + "&nbsp;</span\n" +
+                "                                                                  >\n" +
+                "                                                                </div>\n" +
+                "                                                                <div></div>\n" +
+                "                                                              </div>\n" +
+                "                                                            </td>\n" +
+                "                                                          </tr>\n" +
+                "                                                        </tbody>\n" +
+                "                                                      </table>\n" +
+                "                                                      <table\n" +
+                "                                                        class=\"module\"\n" +
+                "                                                        role=\"module\"\n" +
+                "                                                        data-type=\"text\"\n" +
+                "                                                        cellpadding=\"0\"\n" +
+                "                                                        cellspacing=\"0\"\n" +
+                "                                                        width=\"100%\"\n" +
+                "                                                        style=\"\n" +
+                "                                                          table-layout: fixed;\n" +
+                "                                                        \"\n" +
+                "                                                        dat#fa-muid=\"a10dcb57-ad22-4f4d-b765-1d427dfddb4e\"\n" +
+                "                                                        data-mc-module-version=\"2019-10-22\"\n" +
+                "                                                      >\n" +
+                "                                                        <tbody>\n" +
+                "                                                          <tr>\n" +
+                "                                                            <td\n" +
+                "                                                              style=\"\n" +
+                "                                                                padding: 18px\n" +
+                "                                                                  30px 18px 30px;\n" +
+                "                                                                line-height: 22px;\n" +
+                "                                                                text-align: inherit;\n" +
+                "                                                                background-color: #ffffff;\n" +
+                "                                                              \"\n" +
+                "                                                              height=\"100%\"\n" +
+                "                                                              valign=\"top\"\n" +
+                "                                                              role=\"module-content\"\n" +
+                "                                                            >\n" +
+                "                                                              <div>\n" +
+                "                                                                <div\n" +
+                "                                                                  style=\"\n" +
+                "                                                                    font-family: inherit;\n" +
+                "                                                                    text-align: center;\n" +
+                "                                                                  \"\n" +
+                "                                                                >\n" +
+                "                                                                  <span\n" +
+                "                                                                    style=\"\n" +
+                "                                                                      font-size: 18px;\n" +
+                "                                                                    \"\n" +
+                "                                                                  >\n" +
+                "                                                                    Welcome to\n" +
+                "                                                                    <span\n" +
+                "                                                                      style=\"\n" +
+                "                                                                        color: #0aad5b;\n" +
+                "                                                                        font-size: 18px;\n" +
+                "                                                                        font-family: arial,\n" +
+                "                                                                          helvetica,\n" +
+                "                                                                          sans-serif;\n" +
+                "                                                                        font-weight: 600;\n" +
+                "                                                                      \"\n" +
+                "                                                                    >\n" +
+                "                                                                      Lensly!</span\n" +
+                "                                                                    >\n" +
+                "                                                                    Please\n" +
+                "                                                                    verify your\n" +
+                "                                                                    account by\n" +
+                "                                                                    using the\n" +
+                "                                                                    6-digit\n" +
+                "                                                                    verification\n" +
+                "                                                                    code.\n" +
+                "                                                                    <br />\n" +
+                "                                                                    <br />\n" +
+                "                                                                    Once\n" +
+                "                                                                    verified,\n" +
+                "                                                                    you'll have\n" +
+                "                                                                    full access\n" +
+                "                                                                    to all our\n" +
+                "                                                                    features.</span\n" +
+                "                                                                  >\n" +
+                "                                                                </div>\n" +
+                "                                                                <div\n" +
+                "                                                                  style=\"\n" +
+                "                                                                    font-family: inherit;\n" +
+                "                                                                    text-align: center;\n" +
+                "                                                                  \"\n" +
+                "                                                                >\n" +
+                "                                                                  <span\n" +
+                "                                                                    style=\"\n" +
+                "                                                                      color: #0aad5b;\n" +
+                "                                                                      font-size: 18px;\n" +
+                "                                                                      font-weight: 600;\n" +
+                "                                                                    \"\n" +
+                "                                                                  >\n" +
+                "                                                                    Thank\n" +
+                "                                                                    you!&nbsp;\n" +
+                "                                                                  </span>\n" +
+                "                                                                </div>\n" +
+                "                                                                <div></div>\n" +
+                "                                                              </div>\n" +
+                "                                                            </td>\n" +
+                "                                                          </tr>\n" +
+                "                                                        </tbody>\n" +
+                "                                                      </table>\n" +
+                "                                                      <table\n" +
+                "                                                        class=\"module\"\n" +
+                "                                                        role=\"module\"\n" +
+                "                                                        data-type=\"spacer\"\n" +
+                "                                                        cellpadding=\"0\"\n" +
+                "                                                        cellspacing=\"0\"\n" +
+                "                                                        width=\"100%\"\n" +
+                "                                                        style=\"\n" +
+                "                                                          table-layout: fixed;\n" +
+                "                                                        \"\n" +
+                "                                                        data-muid=\"7770fdab-634a-4f62-a277-1c66b2646d8d\"\n" +
+                "                                                      >\n" +
+                "                                                        <tbody>\n" +
+                "                                                          <tr>\n" +
+                "                                                            <td\n" +
+                "                                                              style=\"\n" +
+                "                                                                padding: 0px 0px\n" +
+                "                                                                  0px 0px;\n" +
+                "                                                              \"\n" +
+                "                                                              role=\"module-content\"\n" +
+                "                                                            ></td>\n" +
+                "                                                          </tr>\n" +
+                "                                                        </tbody>\n" +
+                "                                                      </table>\n" +
+                "                                                      <table\n" +
+                "                                                        bgcolor=\"#FFF\"\n" +
+                "                                                        cellpadding=\"0\"\n" +
+                "                                                        cellspacing=\"0\"\n" +
+                "                                                        class=\"module\"\n" +
+                "                                                        data-role=\"module-button\"\n" +
+                "                                                        data-type=\"button\"\n" +
+                "                                                        role=\"module\"\n" +
+                "                                                        style=\"\n" +
+                "                                                          padding-top: 20px;\n" +
+                "                                                          padding-bottom: 50px;\n" +
+                "                                                          table-layout: fixed;\n" +
+                "                                                        \"\n" +
+                "                                                        width=\"100%\"\n" +
+                "                                                        data-muid=\"d050540f-4672-4f31-80d9-b395dc08abe1\"\n" +
+                "                                                      >\n" +
+                "                                                        <tbody>\n" +
+                "                                                          <tr>\n" +
+                "                                                            <td\n" +
+                "                                                              align=\"center\"\n" +
+                "                                                              class=\"outer-td\"\n" +
+                "                                                            >\n" +
+                "                                                              <table\n" +
+                "                                                                border=\"0\"\n" +
+                "                                                                cellpadding=\"0\"\n" +
+                "                                                                cellspacing=\"0\"\n" +
+                "                                                                class=\"wrapper-mobile\"\n" +
+                "                                                                style=\"\n" +
+                "                                                                  text-align: center;\n" +
+                "                                                                \"\n" +
+                "                                                              >\n" +
+                "                                                                <tbody>\n" +
+                "                                                                  <tr>\n" +
+                "                                                                    <td\n" +
+                "                                                                      align=\"center\"\n" +
+                "                                                                      bgcolor=\"#0AAD5B\"\n" +
+                "                                                                      class=\"inner-td\"\n" +
+                "                                                                      style=\"\n" +
+                "                                                                        border-radius: 6px;\n" +
+                "                                                                        font-size: 16px;\n" +
+                "                                                                        text-align: center;\n" +
+                "                                                                        background-color: inherit;\n" +
+                "                                                                      \"\n" +
+                "                                                                    >\n" +
+                "                                                                      <div\n" +
+                "                                                                        style=\"\n" +
+                "                                                                          background-color: #0aad5b;\n" +
+                "                                                                          color: #000000;\n" +
+                "                                                                          display: block;\n" +
                 "\n" +
-                "<span style=\"display:none;font-size:1px;color:#fff;max-height:0\"></span>\n" +
-                "\n" +
-                "  <table role=\"presentation\" width=\"100%\" style=\"border-collapse:collapse;min-width:100%;width:100%!important\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n" +
-                "    <tbody><tr>\n" +
-                "      <td width=\"100%\" height=\"53\" bgcolor=\"#0b0c0c\">\n" +
-                "        \n" +
-                "        <table role=\"presentation\" width=\"100%\" style=\"border-collapse:collapse;max-width:580px\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" align=\"center\">\n" +
-                "          <tbody><tr>\n" +
-                "            <td width=\"70\" bgcolor=\"#0b0c0c\" valign=\"middle\">\n" +
-                "                <table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse\">\n" +
-                "                  <tbody><tr>\n" +
-                "                    <td style=\"padding-left:10px\">\n" +
-                "                  \n" +
-                "                    </td>\n" +
-                "                    <td style=\"font-size:28px;line-height:1.315789474;Margin-top:4px;padding-left:10px\">\n" +
-                "                      <span style=\"font-family:Helvetica,Arial,sans-serif;font-weight:700;color:#ffffff;text-decoration:none;vertical-align:top;display:inline-block\">Verify your account</span>\n" +
+                "                                                                          padding: 12px\n" +
+                "                                                                            32px\n" +
+                "                                                                            12px\n" +
+                "                                                                            40px;\n" +
+                "                                                                          text-align: center;\n" +
+                "                                                                        \"\n" +
+                "                                                                        target=\"_blank\"\n" +
+                "                                                                      >\n" +
+                "                                                                        <p\n" +
+                "                                                                          style=\"\n" +
+                "                                                                            font-size: 28px;\n" +
+                "                                                                            letter-spacing: 8px;\n" +
+                "                                                                            margin: 0;\n" +
+                "                                                                            padding: 0;\n" +
+                "                                                                          \"\n" +
+                "                                                                        >\n" + token + "\n" +
+                "                                                                        </p>\n" +
+                "                                                                      </div>\n" +
+                "                                                                      <small\n" +
+                "                                                                        ><p\n" +
+                "                                                                          style=\"\n" +
+                "                                                                            color: #5d5d5d;\n" +
+                "                                                                            margin-top: 5px;\n" +
+                "                                                                          \"\n" +
+                "                                                                        >\n" +
+                "                                                                          Link\n" +
+                "                                                                          will\n" +
+                "                                                                          expire\n" +
+                "                                                                          in 60\n" +
+                "                                                                          minutes.\n" +
+                "                                                                        </p></small\n" +
+                "                                                                      >\n" +
+                "                                                                    </td>\n" +
+                "                                                                  </tr>\n" +
+                "                                                                </tbody>\n" +
+                "                                                              </table>\n" +
+                "                                                            </td>\n" +
+                "                                                          </tr>\n" +
+                "                                                        </tbody>\n" +
+                "                                                      </table>\n" +
+                "                                                    </td>\n" +
+                "                                                  </tr>\n" +
+                "                                                </tbody>\n" +
+                "                                                <table\n" +
+                "                                                  cellpadding=\"0\"\n" +
+                "                                                  cellspacing=\"0\"\n" +
+                "                                                  class=\"module\"\n" +
+                "                                                  data-role=\"module-button\"\n" +
+                "                                                  data-type=\"button\"\n" +
+                "                                                  role=\"module\"\n" +
+                "                                                  style=\"table-layout: fixed\"\n" +
+                "                                                  width=\"100%\"\n" +
+                "                                                  data-muid=\"550f60a9-c478-496c-b705-077cf7b1ba9a\"\n" +
+                "                                                >\n" +
+                "                                                  <tbody>\n" +
+                "                                                    <tr>\n" +
+                "                                                      <td\n" +
+                "                                                        align=\"center\"\n" +
+                "                                                        bgcolor=\"\"\n" +
+                "                                                        class=\"outer-td\"\n" +
+                "                                                      >\n" +
+                "                                                        <table\n" +
+                "                                                          border=\"0\"\n" +
+                "                                                          cellpadding=\"20\"\n" +
+                "                                                          cellspacing=\"0\"\n" +
+                "                                                          class=\"wrapper-mobile\"\n" +
+                "                                                          style=\"\n" +
+                "                                                            text-align: center;\n" +
+                "                                                          \"\n" +
+                "                                                        >\n" +
+                "                                                          <tbody>\n" +
+                "                                                            <tr>\n" +
+                "                                                              <td\n" +
+                "                                                                class=\"inner-td\"\n" +
+                "                                                                style=\"\n" +
+                "                                                                  border-radius: 22px;\n" +
+                "                                                                  font-size: 16px;\n" +
+                "                                                                  text-align: center;\n" +
+                "                                                                  background-color: inherit;\n" +
+                "                                                                  font-family: inherit;\n" +
+                "                                                                \"\n" +
+                "                                                              >\n" +
+                "                                                                <a\n" +
+                "                                                                  href=\"https://lensly.io/\"\n" +
+                "                                                                  style=\"\n" +
+                "                                                                    color: #0aad5b;\n" +
+                "                                                                    display: inline-block;\n" +
+                "                                                                    font-size: 18px;\n" +
+                "                                                                    font-weight: small;\n" +
+                "                                                                    letter-spacing: 5px;\n" +
+                "                                                                    line-height: normal;\n" +
+                "                                                                    padding: 5px\n" +
+                "                                                                      18px;\n" +
+                "                                                                    text-align: center;\n" +
+                "                                                                    text-decoration: none;\n" +
+                "                                                                  \"\n" +
+                "                                                                  target=\"_blank\"\n" +
+                "                                                                  rel=\"noreferrer\"\n" +
+                "                                                                  >LENSLY</a\n" +
+                "                                                                >\n" +
+                "                                                              </td>\n" +
+                "                                                            </tr>\n" +
+                "                                                          </tbody>\n" +
+                "                                                        </table>\n" +
+                "                                                      </td>\n" +
+                "                                                    </tr>\n" +
+                "                                                  </tbody>\n" +
+                "                                                </table>\n" +
+                "                                              </table>\n" +
+                "                                            </td>\n" +
+                "                                          </tr>\n" +
+                "                                        </tbody>\n" +
+                "                                      </table>\n" +
+                "                                    </td>\n" +
+                "                                  </tr>\n" +
+                "                                </tbody>\n" +
+                "                              </table>\n" +
+                "                            </td>\n" +
+                "                          </tr>\n" +
+                "                        </tbody>\n" +
+                "                      </table>\n" +
                 "                    </td>\n" +
                 "                  </tr>\n" +
-                "                </tbody></table>\n" +
-                "              </a>\n" +
+                "                </tbody>\n" +
+                "              </table>\n" +
                 "            </td>\n" +
                 "          </tr>\n" +
-                "        </tbody></table>\n" +
-                "        \n" +
-                "      </td>\n" +
-                "    </tr>\n" +
-                "  </tbody></table>\n" +
-                "  <table role=\"presentation\" class=\"m_-6186904992287805515content\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;max-width:580px;width:100%!important\" width=\"100%\">\n" +
-                "    <tbody><tr>\n" +
-                "      <td width=\"10\" height=\"10\" valign=\"middle\"></td>\n" +
-                "      <td>\n" +
-                "        \n" +
-                "                <table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse\">\n" +
-                "                  <tbody><tr>\n" +
-                "                    <td bgcolor=\"#1D70B8\" width=\"100%\" height=\"10\"></td>\n" +
-                "                  </tr>\n" +
-                "                </tbody></table>\n" +
-                "        \n" +
-                "      </td>\n" +
-                "      <td width=\"10\" valign=\"middle\" height=\"10\"></td>\n" +
-                "    </tr>\n" +
-                "  </tbody></table>\n" +
-                "\n" +
-                "\n" +
-                "\n" +
-                "  <table role=\"presentation\" class=\"m_-6186904992287805515content\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"border-collapse:collapse;max-width:580px;width:100%!important\" width=\"100%\">\n" +
-                "    <tbody><tr>\n" +
-                "      <td height=\"30\"><br></td>\n" +
-                "    </tr>\n" +
-                "    <tr>\n" +
-                "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
-                "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
-                "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Hi " + name + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Thank you for registering. Please copy and paste the below code to activate your account: </p><blockquote style=\"Margin:0 0 20px 0;border-left:10px solid #b1b4b6;padding:15px 0 0.1px 15px;font-size:19px;line-height:25px\"><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> <p>" + token +"</p> </p></blockquote>\n Link will expire in 15 minutes. <p>See you soon</p>\n <p>Team Lensa</p>" +
-                "        \n" +
-                "      </td>\n" +
-                "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
-                "    </tr>\n" +
-                "    <tr>\n" +
-                "      <td height=\"30\"><br></td>\n" +
-                "    </tr>\n" +
-                "  </tbody></table><div class=\"yj6qo\"></div><div class=\"adL\">\n" +
-                "\n" +
-                "</div></div>";
+                "        </tbody>\n" +
+                "      </table>\n" +
+                "    </div> ";
     }
 }
