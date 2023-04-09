@@ -84,7 +84,7 @@ public class UserManager implements UserService {
         if(isUser != null)
         {
             Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.EXISTING_USER_BY_EMAIL);
-            return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
+            return new ResponseModel<>(payload, HttpStatus.OK);
         }
 
         Payload<Boolean> payload = new Payload<>(true, true, "OK!");

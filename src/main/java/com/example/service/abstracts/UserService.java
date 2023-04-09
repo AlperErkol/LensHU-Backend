@@ -11,7 +11,6 @@ public interface UserService {
     List<UserDto> getAllUsers();
     UserDto getUser(String email);
     ResponseModel<UserDto> createUser(RegisterUserDto registerUserDto);
-
     ResponseModel<UserDto> updateUser(UserDto userDto);
     ResponseModel<UserDto> logInUser(UserDto userDto);
     UserDto getUserById(Long id);

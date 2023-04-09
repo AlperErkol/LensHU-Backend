@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.EmailDto;
 import com.example.dto.ResetPasswordDto;
 import com.example.dto.UserDto;
 import com.example.service.abstracts.UserService;
@@ -47,4 +48,5 @@ public class TokenController {
         ResponseModel<UserDto> responseModel = this.userService.resetPassword(changePasswordDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
+
 }
