@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.dto.EmailDto;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
+import com.example.model.Subscribe;
 import com.example.service.abstracts.VerificationTokenService;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseModel;
@@ -61,4 +62,11 @@ public class UserController {
         ResponseModel<UserDto> responseModel = this.userService.logInUser(userDto);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
+
+    @PostMapping("/user/subscribe")
+    public ResponseEntity<Payload<Boolean>> subscribe(@RequestBody Subscribe subscribe){
+        ResponseModel<Boolean> responseModel = this.userService.subscribe(subscribe);
+        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
+    }
+
 }

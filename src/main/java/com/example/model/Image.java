@@ -16,5 +16,6 @@ public class Image {
     @Lob
     @Column(name = "image")
     private byte[] image;
+    private String originalFilename;
     private Date date;
 }

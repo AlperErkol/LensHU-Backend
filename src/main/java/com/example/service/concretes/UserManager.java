@@ -3,7 +3,9 @@ import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.ResetPasswordDto;
 import com.example.model.PasswordResetToken;
+import com.example.model.Subscribe;
 import com.example.repository.PasswordResetRepository;
+import com.example.repository.SubscribeRepository;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseMessage;
 import com.example.util.response.ResponseModel;
@@ -25,18 +27,20 @@ public class UserManager implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordResetRepository passwordResetRepository;
+    private final SubscribeRepository subscribeRepository;
     private final VerificationTokenManager verificationTokenManager;
     private final ModelMapper modelMapper;
     private final PasswordConfig passwordConfig;
 
     @Autowired
-    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig, PasswordResetRepository passwordResetRepository) {
+    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig, PasswordResetRepository passwordResetRepository, SubscribeRepository subscribeRepository) {
         super();
         this.userRepository = userRepository;
         this.verificationTokenManager = verificationTokenManager;
         this.modelMapper = modelMapper;
         this.passwordConfig = passwordConfig;
         this.passwordResetRepository = passwordResetRepository;
+        this.subscribeRepository = subscribeRepository;
     }
 
     @Override
@@ -159,6 +163,20 @@ public class UserManager implements UserService {
     }
 
     @Override
+    public ResponseModel<Boolean> subscribe(Subscribe subscribe) {
+        String email = subscribe.getEmail();
+        Subscribe isSubscribed = this.subscribeRepository.getSubscribeByEmail(email);
+        if(isSubscribed != null)
+        {
+            Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.ALREADY_SUBSCRIBE);
+            return new ResponseModel<>(payload, HttpStatus.OK);
+        }
+        this.subscribeRepository.save(subscribe);
+        Payload<Boolean> payload = new Payload<>(null, true, ResponseMessage.SUBSCRIBED_SUCCESSFULLY);
+        return new ResponseModel<>(payload, HttpStatus.OK);
+    }
+
+    @Override
     public ResponseModel<UserDto> createUser(RegisterUserDto registerUserDto) {
 
         String email = registerUserDto.getEmail();
@@ -181,7 +199,6 @@ public class UserManager implements UserService {
 
         Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.USER_CREATED);
         return new ResponseModel<>(payload, HttpStatus.CREATED);
-
     }
 
     // Update just name and surname

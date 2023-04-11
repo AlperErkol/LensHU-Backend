@@ -3,6 +3,7 @@ package com.example.service.abstracts;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.dto.ResetPasswordDto;
+import com.example.model.Subscribe;
 import com.example.util.response.ResponseModel;
 
 import java.util.List;
@@ -19,4 +20,5 @@ public interface UserService {
     ResponseModel<Boolean> checkIfUserAvailableByEmail(String email);
     ResponseModel<UserDto> resetPassword(ResetPasswordDto resetPasswordDto);
     ResponseModel<UserDto> createPasswordResetToken(String email);
+    ResponseModel<Boolean> subscribe(Subscribe subscribe);
 }
