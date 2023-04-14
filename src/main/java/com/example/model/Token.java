@@ -25,7 +25,6 @@ public class Token {
     @JoinColumn(nullable = false, name = "user_id")
     private User user;
     private Date expiryDate;
-    @NonNull
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean verified;
     public Token(User user){
@@ -54,7 +53,6 @@ public class Token {
         return currentDate.compareTo(expiryDate) < 0;*/
         return true;
     }
-
     public boolean isVerified(){
         return this.verified;
     }

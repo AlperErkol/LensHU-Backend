@@ -1,9 +1,9 @@
 package com.example.service.concretes;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
-import com.example.dto.ResetPasswordDto;
-import com.example.model.PasswordResetToken;
-import com.example.repository.PasswordResetRepository;
+import com.example.model.Subscribe;
+import com.example.repository.SubscribeRepository;
+import com.example.service.abstracts.TokenService;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseMessage;
 import com.example.util.response.ResponseModel;
@@ -24,21 +24,21 @@ import java.util.List;
 public class UserManager implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordResetRepository passwordResetRepository;
-    private final VerificationTokenManager verificationTokenManager;
+    private final TokenService tokenService;
+    private final SubscribeRepository subscribeRepository;
     private final ModelMapper modelMapper;
     private final PasswordConfig passwordConfig;
 
+
     @Autowired
-    public UserManager(UserRepository userRepository, VerificationTokenManager verificationTokenManager, ModelMapper modelMapper, PasswordConfig passwordConfig, PasswordResetRepository passwordResetRepository) {
+    public UserManager(UserRepository userRepository, ModelMapper modelMapper, PasswordConfig passwordConfig, SubscribeRepository subscribeRepository, TokenService tokenService) {
         super();
         this.userRepository = userRepository;
-        this.verificationTokenManager = verificationTokenManager;
         this.modelMapper = modelMapper;
         this.passwordConfig = passwordConfig;
-        this.passwordResetRepository = passwordResetRepository;
+        this.subscribeRepository = subscribeRepository;
+        this.tokenService = tokenService;
     }
-
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = this.userRepository.findAll();
@@ -50,33 +50,12 @@ public class UserManager implements UserService {
 
         return userList;
     }
-
-    @Override
-    public UserDto getUser(String email) {
-        User user = this.userRepository.getUserByEmail(email);
-        if(user == null) return null;
-        return this.modelMapper.map(user, UserDto.class);
-    }
-
     @Override
     public UserDto getUserById(Long id) {
         User user = this.userRepository.getUserById(id);
         if(user == null) return null;
         return this.modelMapper.map(user, UserDto.class);
     }
-
-    @Override
-    public UserDto getUserByEmail(String email) {
-        User user = this.userRepository.getUserByEmail(email);
-        return this.modelMapper.map(user, UserDto.class);
-    }
-
-    @Override
-    public UserDto findFirstByEmail(String email) {
-        User user = this.userRepository.findFirstByEmail(email);
-        return this.modelMapper.map(user, UserDto.class);
-    }
-
     @Override
     public ResponseModel<Boolean> checkIfUserAvailableByEmail(String email) {
         User isUser = this.userRepository.getUserByEmail(email);
@@ -84,80 +63,25 @@ public class UserManager implements UserService {
         if(isUser != null)
         {
             Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.EXISTING_USER_BY_EMAIL);
-            return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
+            return new ResponseModel<>(payload, HttpStatus.OK);
         }
 
         Payload<Boolean> payload = new Payload<>(true, true, "OK!");
         return new ResponseModel<>(payload, HttpStatus.OK);
-
     }
-
     @Override
-    public ResponseModel<UserDto> resetPassword(ResetPasswordDto resetPasswordDto) {
-        String token = resetPasswordDto.getToken();
-        PasswordResetToken passwordResetToken = this.passwordResetRepository.findByToken(token);
-        User user = passwordResetToken.getUser();
-
-        if(!passwordResetToken.isVerified())
+    public ResponseModel<Boolean> subscribe(Subscribe subscribe) {
+        String email = subscribe.getEmail();
+        Subscribe isSubscribed = this.subscribeRepository.getSubscribeByEmail(email);
+        if(isSubscribed != null)
         {
-            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.TOKEN_NOT_VERIFIED);
-            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
+            Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.ALREADY_SUBSCRIBE);
+            return new ResponseModel<>(payload, HttpStatus.OK);
         }
-
-        if(user == null)
-        {
-            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
-            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
-        }
-
-        String oldPassword = user.getPassword();
-        String newPassword = resetPasswordDto.getPassword();
-        boolean isEqualOldPassword = this.passwordConfig.passwordEncoder().matches(newPassword, oldPassword);
-
-        if(isEqualOldPassword)
-        {
-            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.PASSWORD_SAME_OLD);
-            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        boolean isPasswordsEqual = resetPasswordDto.checkIfPasswordsMatch();
-
-        if(!isPasswordsEqual)
-        {
-            Payload<UserDto> payload = new Payload<>(null, false, ResponseMessage.PASSWORDS_DO_NOT_MATCH);
-            return new ResponseModel<>(payload, HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        String encodedPassword = this.passwordConfig.passwordEncoder().encode(newPassword);
-        user.setPassword(encodedPassword);
-        this.userRepository.save(user);
-        UserDto userDto = modelMapper.map(user, UserDto.class);
-
-        // Delete Token from DB.
-
-        Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.PASSWORD_CHANGED);
-        return new ResponseModel<>(payload, HttpStatus.CREATED);
+        this.subscribeRepository.save(subscribe);
+        Payload<Boolean> payload = new Payload<>(null, true, ResponseMessage.SUBSCRIBED_SUCCESSFULLY);
+        return new ResponseModel<>(payload, HttpStatus.OK);
     }
-
-    @Override
-    public ResponseModel<UserDto> createPasswordResetToken(String email) {
-        User user = this.userRepository.findFirstByEmail(email);
-        UserDto userDto = new UserDto(email);
-
-        if(user == null)
-        {
-
-            Payload<UserDto> payload = new Payload<>(userDto, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
-            return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
-        }
-
-        PasswordResetToken passwordResetToken = new PasswordResetToken(user);
-        this.passwordResetRepository.save(passwordResetToken);
-
-        Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.TOKEN_SENT);
-        return new ResponseModel<>(payload, HttpStatus.CREATED);
-    }
-
     @Override
     public ResponseModel<UserDto> createUser(RegisterUserDto registerUserDto) {
 
@@ -169,7 +93,6 @@ public class UserManager implements UserService {
             Payload<UserDto> payload = new Payload<>(userDto, false, ResponseMessage.EXISTING_USER_BY_EMAIL);
             return new ResponseModel<>(payload, HttpStatus.BAD_REQUEST);
         }
-
         UserDto userDto = this.modelMapper.map(registerUserDto, UserDto.class);
         String password = registerUserDto.getPassword();
         String encodedPassword = this.passwordConfig.passwordEncoder().encode(password);
@@ -177,18 +100,28 @@ public class UserManager implements UserService {
         user.setPassword(encodedPassword);
         user.setActive(false);
         this.userRepository.save(user);
-        verificationTokenManager.createVerificationToken(user);
+        tokenService.generateTokenAndSendEmail(user.getEmail(), "verify-account");
 
         Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.USER_CREATED);
         return new ResponseModel<>(payload, HttpStatus.CREATED);
-
     }
-
     @Override
     public ResponseModel<UserDto> updateUser(UserDto userDto) {
-        return null;
+        String email = userDto.getEmail();
+        User user = this.userRepository.getUserByEmail(email);
+        if(user == null)
+        {
+            Payload<UserDto> payload = new Payload<UserDto>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
+            return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
+        }
+        String updateName = userDto.getName();
+        String updateSurname = userDto.getSurname();
+        user.setName(updateName);
+        user.setSurname(updateSurname);
+        this.userRepository.save(user);
+        Payload<UserDto> payload = new Payload<>(userDto, true, ResponseMessage.USER_UPDATED);
+        return new ResponseModel<>(payload, HttpStatus.CREATED);
     }
-
     @Override
     public ResponseModel<UserDto> logInUser(UserDto userDto) {
 

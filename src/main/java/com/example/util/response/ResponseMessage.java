@@ -15,5 +15,10 @@ public class ResponseMessage {
     public static final String EXISTING_USER_BY_EMAIL = "There is an existing account with the specified email address.";
     public static final String TOKEN_NOT_VERIFIED = "First, you need to verify the token.";
     public static final String TOKEN_NOT_FOUND = "Token you've been entered could not be found.";
+    public static final String USER_UPDATED = "Updated successfully.";
+    public static final String ALREADY_SUBSCRIBE = "You've already been subscribed with this email address";
+    public static final String SUBSCRIBED_SUCCESSFULLY = "Stay tuned for updates on Lensly's latest features, improvements, and deployment date.";
+
+
 
 }

@@ -1,9 +1,9 @@
 package com.example.controller;
 
-import com.example.dto.ResetPasswordDto;
+import com.example.dto.EmailDto;
 import com.example.dto.UserDto;
+import com.example.service.abstracts.TokenService;
 import com.example.service.abstracts.UserService;
-import com.example.service.abstracts.VerificationTokenService;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseModel;
 import org.springframework.http.ResponseEntity;
@@ -14,37 +14,21 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin
 public class TokenController {
     private UserService userService;
-    private VerificationTokenService verificationTokenService;
+    private TokenService tokenService;
 
-    public TokenController(UserService userService, VerificationTokenService verificationTokenService) {
+    public TokenController(UserService userService, TokenService tokenService) {
         this.userService = userService;
-        this.verificationTokenService = verificationTokenService;
+        this.tokenService = tokenService;
     }
-
-    @PostMapping("/verification")
-    public ResponseEntity<Payload<String>> createVerificationToken(@RequestBody String email){
-        ResponseModel<String> responseModel = this.verificationTokenService.createVerificationTokenExplicit(email);
+    @PostMapping("/verification/{tokenType}")
+    public ResponseEntity<Payload<Boolean>> createToken(@RequestBody EmailDto emailDto, @PathVariable String tokenType){
+        ResponseModel<Boolean> responseModel = this.tokenService.generateTokenAndSendEmail(emailDto.getEmail(), tokenType);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
-
     @PostMapping("/verification/{token}/{type}")
-    public ResponseEntity<Payload<String>> verifyToken(@RequestBody UserDto userDto, @PathVariable String token,
+    public ResponseEntity<Payload<Boolean>> verifyToken(@RequestBody UserDto userDto, @PathVariable String token,
                                                        @PathVariable String type){
-        ResponseModel<String> responseModel = this.verificationTokenService.verifyToken(userDto, token, type);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-
-    /*
-    @PostMapping("/reset/password")
-    public ResponseEntity<Payload<UserDto>> createPasswordResetToken(@RequestBody String email){
-        ResponseModel<UserDto> responseModel = this.userService.createPasswordResetToken(email);
-        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
-    }
-    */
-
-    @PostMapping("/password")
-    public ResponseEntity<Payload<UserDto>> resetPassword(@RequestBody ResetPasswordDto changePasswordDto){
-        ResponseModel<UserDto> responseModel = this.userService.resetPassword(changePasswordDto);
+        ResponseModel<Boolean> responseModel = this.tokenService.verifyToken(userDto, token, type);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 }
