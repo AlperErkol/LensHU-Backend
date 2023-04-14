@@ -8,13 +8,12 @@ import com.example.model.VerificationToken;
 import com.example.repository.PasswordResetRepository;
 import com.example.repository.UserRepository;
 import com.example.repository.VerificationTokenRepository;
-import com.example.service.abstracts.VerificationTokenService;
+import com.example.service.abstracts.TokenService;
 import com.example.util.email.EmailService;
 import com.example.util.response.Payload;
 import com.example.util.response.ResponseMessage;
 import com.example.util.response.ResponseModel;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -22,132 +21,99 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Component
-public class VerificationTokenManager implements VerificationTokenService {
-
-    private final VerificationTokenRepository verificationTokenRepository;
-    private final PasswordResetRepository passwordResetRepository;
-    private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
-    private final EmailService emailService;
-
+public class TokenManager implements TokenService {
+    private UserRepository userRepository;
+    private VerificationTokenRepository verificationTokenRepository;
+    private PasswordResetRepository passwordResetRepository;
+    private EmailService emailService;
     @Autowired
-    public VerificationTokenManager(VerificationTokenRepository verificationTokenRepository, UserRepository userRepository, PasswordResetRepository passwordResetRepository, ModelMapper modelMapper, EmailService emailService){
+    public TokenManager(UserRepository userRepository, VerificationTokenRepository verificationTokenRepository, PasswordResetRepository passwordResetRepository, EmailService emailService){
+        this.userRepository = userRepository;
         this.verificationTokenRepository = verificationTokenRepository;
         this.passwordResetRepository = passwordResetRepository;
-        this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
         this.emailService = emailService;
     }
-
     @Override
-    public ResponseModel<String> createVerificationTokenExplicit(String email) {
+    public ResponseModel<Boolean> generateTokenAndSendEmail(String email, String tokenType) {
         User user = this.userRepository.getUserByEmail(email);
+        Payload<Boolean> payload = null;
         if(user == null)
         {
-            Payload<String> payload = new Payload<>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
+            payload = new Payload<>(null, false, ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
-        VerificationToken verificationToken = findVerificationTokenByUser(user);
-        //boolean isValid = verificationToken.isExpirationValid();
-
-        if(verificationToken != null)
-        {
-            Payload<String> payload = new Payload<>(verificationToken.getToken(), true, ResponseMessage.TOKEN_SENT);
-            return new ResponseModel<>(payload, HttpStatus.OK);
+        if(tokenType.equals("verify-account")) {
+            VerificationToken token = new VerificationToken(user);
+            this.verificationTokenRepository.save(token);
+            sendToken(user, token);
         }
-
-        VerificationToken createdVerificationToken = createVerificationToken(user);
-        Payload<String> payload = new Payload<>(createdVerificationToken.getToken(), true, ResponseMessage.TOKEN_SENT);
+        else
+        {
+            PasswordResetToken token = new PasswordResetToken(user);
+            this.passwordResetRepository.save(token);
+            sendToken(user, token);
+        }
+        payload = new Payload<>(null, true, ResponseMessage.TOKEN_SENT);
         return new ResponseModel<>(payload, HttpStatus.CREATED);
-    }
-
-    @Override
-    public VerificationToken createVerificationToken(User user) {
-        VerificationToken verificationToken = new VerificationToken(user);
-        emailService.send(user.getEmail(), "Welcome to Lensa!", buildEmail(user.getName(), verificationToken.getToken()));
-        return this.verificationTokenRepository.save(verificationToken);
-    }
-    @Override
-    public VerificationToken findVerificationTokenByUser(User user) {
-        return this.verificationTokenRepository.findVerificationTokenByUser(user);
     }
     @Override
     @Transactional
-    public ResponseModel<String> verifyToken(UserDto userDto, String token, String type) {
+    public ResponseModel<Boolean> verifyToken(UserDto userDto, String token, String tokenType) {
         String email = userDto.getEmail();
-        System.out.println(email);
         User user = this.userRepository.getUserByEmail(email);
-
         if(user == null)
         {
-            Payload<String> payload = new Payload<>(null, false,
+            Payload<Boolean> payload = new Payload<>(null, false,
                     ResponseMessage.USER_NOT_FOUND_BY_EMAIL);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
-
         Token tokenModel = null;
-
-        if(type.equals("verify-account"))
+        if(tokenType.equals("verify-account"))
         {
             tokenModel = this.verificationTokenRepository.findVerificationTokenByUser(user);
-            System.out.println(tokenModel);
         }
-        else if(type.equals("reset-password"))
+        else
         {
-            tokenModel = this.passwordResetRepository.findByToken(token);
+            tokenModel = this.passwordResetRepository.findPasswordResetTokenByUser(user);
         }
-        else System.out.println("Wrong type while getting token.");
 
         if(tokenModel == null)
         {
-            Payload<String> payload = new Payload<>(null, false, ResponseMessage.TOKEN_NOT_FOUND);
+            Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.TOKEN_NOT_FOUND);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
         String DBToken = tokenModel.getToken();
+        boolean isExpiryValid = tokenModel.isExpirationValid();
+        Long tokenId = tokenModel.getId();
 
         if(!token.equals(DBToken))
         {
-            Payload<String> payload = new Payload<>(null, false, ResponseMessage.WRONG_TOKEN);
+            Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.WRONG_TOKEN);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
-
-        boolean isExpiryValid = tokenModel.isExpirationValid();
-
         if(!isExpiryValid)
         {
-            Payload<String> payload = new Payload<>(null, false, ResponseMessage.TOKEN_EXPIRED);
+            Payload<Boolean> payload = new Payload<>(null, false, ResponseMessage.TOKEN_EXPIRED);
             return new ResponseModel<>(payload, HttpStatus.NOT_FOUND);
         }
 
-        if(type.equals("verify-account"))
+        if(tokenType.equals("verify-account"))
         {
             user.setActive(true);
             this.userRepository.save(user);
-
-            Long tokenId = tokenModel.getId();
-            // Use it for logging.
-            boolean isDeleted = deleteVerificationToken(tokenId);
+            this.verificationTokenRepository.deleteVerificationTokenById(tokenId);
         }
-
-        else if(type.equals("reset-password"))
+        else if(tokenType.equals("password-reset"))
         {
             tokenModel.setVerified(true);
-            PasswordResetToken passwordResetToken = this.modelMapper.map(tokenModel, PasswordResetToken.class);
-            this.passwordResetRepository.save(passwordResetToken);
+            this.passwordResetRepository.deletePasswordResetTokenById(tokenId);
         }
 
-        Payload<String> payload = new Payload<>(token, true, ResponseMessage.USER_ACTIVATED);
+        Payload<Boolean> payload = new Payload<>(true, true, ResponseMessage.USER_ACTIVATED);
         return new ResponseModel<>(payload, HttpStatus.OK);
     }
-    @Override
-    public Boolean deleteVerificationToken(Long verificationTokenId) {
-        System.out.println(verificationTokenId);
-        Long deletedId = this.verificationTokenRepository.deleteVerificationTokenById(verificationTokenId);
-        return verificationTokenId.equals(deletedId);
-    }
-
     private String buildEmail(String name, String token) {
         return "     <div>\n" +
                 "      <table cellpadding=\"0\" cellspacing=\"0\" width=\"100%\">\n" +
@@ -607,5 +573,10 @@ public class VerificationTokenManager implements VerificationTokenService {
                 "        </tbody>\n" +
                 "      </table>\n" +
                 "    </div> ";
+    }
+    private Boolean sendToken(User user, Token token) {
+        if(token instanceof VerificationToken) emailService.send(user.getEmail(), "Welcome to Lensa!", buildEmail(user.getName(), token.getToken()));
+        if(token instanceof PasswordResetToken) emailService.send(user.getEmail(), "Welcome to Lensa [PASSWORD-RESET]!", buildEmail(user.getName(), token.getToken()));
+        return true;
     }
 }

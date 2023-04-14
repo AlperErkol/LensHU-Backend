@@ -4,14 +4,9 @@ import com.example.dto.ImageDto;
 import com.example.model.Image;
 import com.example.service.abstracts.RecognitionService;
 import com.example.util.response.Payload;
-import com.example.util.response.ResponseModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
