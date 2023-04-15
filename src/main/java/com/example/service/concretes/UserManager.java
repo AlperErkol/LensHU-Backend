@@ -1,4 +1,5 @@
 package com.example.service.concretes;
+import com.example.dto.ChangePasswordDto;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.model.Subscribe;
@@ -82,9 +83,30 @@ public class UserManager implements UserService {
         Payload<Boolean> payload = new Payload<>(null, true, ResponseMessage.SUBSCRIBED_SUCCESSFULLY);
         return new ResponseModel<>(payload, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto) {
+        Payload<Boolean> payload = null;
+        String email = changePasswordDto.getEmail();
+        String currentPassword = changePasswordDto.getCurrentPassword();
+        String password = changePasswordDto.getPassword();
+        User user = this.userRepository.getUserByEmail(email);
+        boolean isPasswordMatches = this.passwordConfig.passwordEncoder().matches(currentPassword, user.getPassword());
+        boolean isNewPasswordsMatch = changePasswordDto.checkIfPasswordsMatch();
+
+        if (!isPasswordMatches || !isNewPasswordsMatch) {
+            payload = new Payload<>(false, false, ResponseMessage.ALREADY_SUBSCRIBE);
+            return new ResponseModel<>(payload, HttpStatus.OK);
+        }
+
+        String encodedPassword = this.passwordConfig.passwordEncoder().encode(password);
+        user.setPassword(encodedPassword);
+        payload = new Payload<>(true, true, ResponseMessage.ALREADY_SUBSCRIBE);
+        return new ResponseModel<>(payload, HttpStatus.OK);
+    }
+
     @Override
     public ResponseModel<UserDto> createUser(RegisterUserDto registerUserDto) {
-
         String email = registerUserDto.getEmail();
         User hasUser = this.userRepository.findFirstByEmail(email);
         if(hasUser != null)
