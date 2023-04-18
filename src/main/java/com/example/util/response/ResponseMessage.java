@@ -18,7 +18,6 @@ public class ResponseMessage {
     public static final String USER_UPDATED = "Updated successfully.";
     public static final String ALREADY_SUBSCRIBE = "You've already been subscribed with this email address";
     public static final String SUBSCRIBED_SUCCESSFULLY = "Stay tuned for updates on Lensly's latest features, improvements, and deployment date.";
-
-
-
+    public static final String AN_ERROR_OCCURED = "An error occured while process.";
+    public static final String CURRENT_PASSWORD_DO_NOT_MATCH_WITH_OLD = "Current password is incorrect";
 }

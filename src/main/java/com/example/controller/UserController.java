@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.ChangePasswordDto;
 import com.example.dto.EmailDto;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
@@ -23,8 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public List<UserDto> getAllUsers()
-    {
+    public List<UserDto> getAllUsers(){
         List<UserDto> userDtoList = this.userService.getAllUsers();
         return userDtoList;
     }
@@ -56,6 +56,11 @@ public class UserController {
     @PostMapping("/user/subscription")
     public ResponseEntity<Payload<Boolean>> subscribe(@RequestBody Subscribe subscribe){
         ResponseModel<Boolean> responseModel = this.userService.subscribe(subscribe);
+        return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
+    }
+    @PostMapping("/user/password/{changePasswordType}")
+    public ResponseEntity<Payload<Boolean>> changePassword(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable String changePasswordType){
+        ResponseModel<Boolean> responseModel = this.userService.changePassword(changePasswordDto, changePasswordType);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 }

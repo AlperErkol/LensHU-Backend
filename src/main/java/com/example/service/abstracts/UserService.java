@@ -1,5 +1,6 @@
 package com.example.service.abstracts;
 
+import com.example.dto.ChangePasswordDto;
 import com.example.dto.RegisterUserDto;
 import com.example.dto.UserDto;
 import com.example.model.Subscribe;
@@ -15,4 +16,5 @@ public interface UserService {
     UserDto getUserById(Long id);
     ResponseModel<Boolean> checkIfUserAvailableByEmail(String email);
     ResponseModel<Boolean> subscribe(Subscribe subscribe);
+    ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto, String changePasswordType);
 }
