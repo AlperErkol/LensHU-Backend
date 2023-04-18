@@ -85,23 +85,43 @@ public class UserManager implements UserService {
     }
 
     @Override
-    public ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto) {
+    public ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto, String changePasswordType) {
         Payload<Boolean> payload = null;
         String email = changePasswordDto.getEmail();
-        String currentPassword = changePasswordDto.getCurrentPassword();
         String password = changePasswordDto.getPassword();
         User user = this.userRepository.getUserByEmail(email);
-        boolean isPasswordMatches = this.passwordConfig.passwordEncoder().matches(currentPassword, user.getPassword());
         boolean isNewPasswordsMatch = changePasswordDto.checkIfPasswordsMatch();
-
-        if (!isPasswordMatches || !isNewPasswordsMatch) {
-            payload = new Payload<>(false, false, ResponseMessage.ALREADY_SUBSCRIBE);
+        boolean isNewPasswordSameWithOld = this.passwordConfig.passwordEncoder().matches(password, user.getPassword());
+        if(!(changePasswordType.equals("reset") || changePasswordType.equals("change"))) {
+            payload = new Payload<>(false, false, ResponseMessage.AN_ERROR_OCCURED);
             return new ResponseModel<>(payload, HttpStatus.OK);
         }
 
+        String currentPassword = changePasswordDto.getCurrentPassword();
+        boolean isCurrentPasswordMatchOld = false;
+        if (changePasswordType.equals("reset")) isCurrentPasswordMatchOld = true;
+        else isCurrentPasswordMatchOld = this.passwordConfig.passwordEncoder().matches(currentPassword, user.getPassword());
+
+        if (isNewPasswordSameWithOld) {
+            payload = new Payload<>(false, false, ResponseMessage.PASSWORD_SAME_OLD);
+            return new ResponseModel<>(payload, HttpStatus.OK);
+        }
+
+        if (!isNewPasswordsMatch) {
+            payload = new Payload<>(false, false, ResponseMessage.PASSWORDS_DO_NOT_MATCH);
+            return new ResponseModel<>(payload, HttpStatus.OK);
+        }
+
+        if (!isCurrentPasswordMatchOld) {
+            payload = new Payload<>(false, false, ResponseMessage.CURRENT_PASSWORD_DO_NOT_MATCH_WITH_OLD);
+            return new ResponseModel<>(payload, HttpStatus.OK);
+        }
+
+
         String encodedPassword = this.passwordConfig.passwordEncoder().encode(password);
         user.setPassword(encodedPassword);
-        payload = new Payload<>(true, true, ResponseMessage.ALREADY_SUBSCRIBE);
+        this.userRepository.save(user);
+        payload = new Payload<>(true, true, ResponseMessage.PASSWORD_CHANGED);
         return new ResponseModel<>(payload, HttpStatus.OK);
     }
 

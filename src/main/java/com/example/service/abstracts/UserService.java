@@ -16,5 +16,5 @@ public interface UserService {
     UserDto getUserById(Long id);
     ResponseModel<Boolean> checkIfUserAvailableByEmail(String email);
     ResponseModel<Boolean> subscribe(Subscribe subscribe);
-    ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto);
+    ResponseModel<Boolean> changePassword(ChangePasswordDto changePasswordDto, String changePasswordType);
 }

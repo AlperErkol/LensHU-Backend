@@ -58,9 +58,9 @@ public class UserController {
         ResponseModel<Boolean> responseModel = this.userService.subscribe(subscribe);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
-    @PostMapping("/user/password")
-    public ResponseEntity<Payload<Boolean>> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
-        ResponseModel<Boolean> responseModel = this.userService.changePassword(changePasswordDto);
+    @PostMapping("/user/password/{changePasswordType}")
+    public ResponseEntity<Payload<Boolean>> changePassword(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable String changePasswordType){
+        ResponseModel<Boolean> responseModel = this.userService.changePassword(changePasswordDto, changePasswordType);
         return new ResponseEntity<>(responseModel.getPayload(), responseModel.getHttpStatus());
     }
 }
